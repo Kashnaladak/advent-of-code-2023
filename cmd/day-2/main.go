@@ -9,9 +9,9 @@ import (
 	"strings"
 )
 
-const maxRed = 12
-const maxGreen = 13
-const maxBlue = 14
+const redLimit = 12
+const greenLimit = 13
+const blueLimit = 14
 
 var redRegex = regexp.MustCompile(`(\d+) red`)
 var greenRegex = regexp.MustCompile(`(\d+) green`)
@@ -25,11 +25,16 @@ func main() {
 	defer fp.Close()
 
 	res := 0
+	powerRes := 0
 	gameCounter := 1
 
 	scanner := bufio.NewScanner(fp)
 	for scanner.Scan() {
 		isValidGame := true
+
+		maxRed := 0
+		maxGreen := 0
+		maxBlue := 0
 
 		line := scanner.Text()
 		drawsStr := strings.Split(line, ":")[1]
@@ -40,9 +45,18 @@ func main() {
 			greenVal := extractColorVal(draw, greenRegex)
 			blueVal := extractColorVal(draw, blueRegex)
 
-			if redVal > maxRed || greenVal > maxGreen || blueVal > maxBlue {
+			if redVal > maxRed {
+				maxRed = redVal
+			}
+			if greenVal > maxGreen {
+				maxGreen = greenVal
+			}
+			if blueVal > maxBlue {
+				maxBlue = blueVal
+			}
+
+			if redVal > redLimit || greenVal > greenLimit || blueVal > blueLimit {
 				isValidGame = false
-				break
 			}
 		}
 
@@ -50,10 +64,13 @@ func main() {
 			res = res + gameCounter
 		}
 
+		power := maxRed * maxGreen * maxBlue
+		powerRes = powerRes + power
+
 		gameCounter += 1
 	}
 
-	fmt.Printf("res: %d\n", res)
+	fmt.Printf("res: %d\npower res: %d\n", res, powerRes)
 }
 
 func extractColorVal(draw string, colorRe *regexp.Regexp) int {
