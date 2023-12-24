@@ -23,7 +23,7 @@ func (almRange AlmanacRange) doMap(value int) int {
 }
 
 func main() {
-	fp, err := os.Open("input2.txt")
+	fp, err := os.Open("input.txt")
 	if err != nil {
 		panic(fmt.Sprintf("Unable to open input file: %s", err))
 	}
@@ -72,6 +72,26 @@ func main() {
 		}
 	}
 
+	solvePartOne(seeds, seedToSoil, soilToFertilizer, fertilizerToWater, waterToLight, lightToTemperature, temperatureToHumidity, humidityToLocation)
+
+	r := findMinDestRange(humidityToLocation)
+	fmt.Println(r.startDest)
+
+}
+
+func findMinDestRange(almanacs []AlmanacRange) *AlmanacRange {
+	var res *AlmanacRange = nil
+
+	for _, almanac := range almanacs {
+		if res == nil || res.startDest > almanac.startDest {
+			res = &almanac
+		}
+	}
+
+	return res
+}
+
+func solvePartOne(seeds []int, seedToSoil []AlmanacRange, soilToFertilizer []AlmanacRange, fertilizerToWater []AlmanacRange, waterToLight []AlmanacRange, lightToTemperature []AlmanacRange, temperatureToHumidity []AlmanacRange, humidityToLocation []AlmanacRange) {
 	res := math.MaxInt
 
 	for _, seed := range seeds {
